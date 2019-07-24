@@ -51,4 +51,30 @@ router.delete('/delete/:id', function(req, res) {
   });
 });
 
+
+router.post('/signin',(req,res)=>{
+  const email = req.body.email;
+  const password = req.body.password;
+  console.log(email)
+  Person.findOne({
+      email:email
+  },(err,user)=>{
+      if(err){
+          res.json(err);
+      }
+      else{
+          console.log(user);
+          if(user == null ){
+            res.json({message:"Check your Credentials"});
+          }
+          else if (user.password != password){
+              res.json({message:"Check your password"});
+          }
+          else{
+              res.json(user);
+          }
+      }
+  })
+})
+
 module.exports = router;
