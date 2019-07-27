@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var app = express();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -8,6 +9,14 @@ router.get('/', function(req, res, next) {
 require('../models/batch');
 var mongoose = require('mongoose');
 var Person = mongoose.model('persons');
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
+  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+});
 
 router.post('/add', function(req, res) {
   new Person({
@@ -52,7 +61,7 @@ router.delete('/delete/:id', function(req, res) {
 });
 
 
-router.post('/signin',(req,res)=>{
+router.post('/login',(req,res)=>{
   const email = req.body.email;
   const password = req.body.password;
   console.log(email)
@@ -76,5 +85,32 @@ router.post('/signin',(req,res)=>{
       }
   })
 })
+
+
+router.post('/alogin',(req,res)=>{
+  const email = req.body.email;
+  const password = req.body.password;
+  console.log(email)
+  Person.findOne({
+      email:email
+  },(err,user)=>{
+      if(err){
+          res.json(err);
+      }
+      else{
+          console.log(user);
+          if(user == null ){
+            res.json({message:"Check your Credentials"});
+          }
+          else if (user.password != password){
+              res.json({message:"Check your password"});
+          }
+          else{
+              res.json(user);
+          }
+      }
+  })
+})
+
 
 module.exports = router;
